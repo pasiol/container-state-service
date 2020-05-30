@@ -1,7 +1,7 @@
 package models
 
 import (
-	"errors"
+	"fmt"
 	"time"
 )
 
@@ -19,12 +19,18 @@ var (
 )
 
 func AddService(s Service) (Service, error) {
+	for _, existing := range services {
+		if s.Name == existing.Name {
+			return Service{}, fmt.Errorf("service with name '%s' already exists", s.Name)
+		}
+	}
 	if s.Name == "" {
-		return Service{}, errors.New("the service name cannot be empty")
+		return Service{}, fmt.Errorf("the service name cannot be empty")
 	}
 	if !s.Started && s.Ended {
-		return Service{}, errors.New("the service cannot ended if it not have started")
+		return Service{}, fmt.Errorf("the service cannot ended if it not have started")
 	}
+	s.Started = true
 	s.CreatedAt = time.Now()
 	if s.Ended {
 		s.EndedAt = time.Now()
@@ -33,4 +39,24 @@ func AddService(s Service) (Service, error) {
 	}
 	services = append(services, &s)
 	return s, nil
+}
+
+func GetServiceByName(name string) (Service, error) {
+	for _, s := range services {
+		if name == s.Name {
+			return *s, nil
+		}
+	}
+	return Service{}, fmt.Errorf("service with name '%s' not founded", name)
+}
+
+func SetEnded(name string) (Service, error) {
+	for _, s := range services {
+		if name == s.Name {
+			s.Ended = true
+			s.EndedAt = time.Now()
+			return *s, nil
+		}
+	}
+	return Service{}, fmt.Errorf("service with name '%s' not founded", name)
 }
