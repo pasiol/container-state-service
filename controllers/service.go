@@ -27,7 +27,7 @@ func (sc *serviceController) post(w http.ResponseWriter, r *http.Request) {
 	s, err := sc.parseRequest(r)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Could not parse User object"))
+		w.Write([]byte("Could not parse Service object"))
 		return
 	}
 	s, err = models.AddService(s)
