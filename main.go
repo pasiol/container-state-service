@@ -3,7 +3,7 @@ package main
 import (
 	"net/http"
 
-	"./controllers"
+	"github.com/pasiol/container-state-service/controllers"
 )
 
 func main() {

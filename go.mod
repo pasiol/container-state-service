@@ -1,2 +1,2 @@
 module github.com/pasiol/container-state-service
-go 1.10
+go 1.14
