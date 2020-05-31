@@ -2,10 +2,11 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"regexp"
 
-	"../models"
+	"github.com/pasiol/container-state-service/models"
 )
 
 type serviceController struct {
@@ -14,13 +15,33 @@ type serviceController struct {
 
 func (sc serviceController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/services" {
-		switch r.Method {
-		case http.MethodPost:
+		if r.Method == http.MethodPost {
 			sc.post(w, r)
+		}
+	} else {
+		matches := sc.serviceNamePattern.FindStringSubmatch(r.URL.Path)
+		if len(matches) == 0 {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		name := matches[1]
+		switch r.Method {
+		case http.MethodGet:
+			sc.get(name, w)
 		default:
+			fmt.Println("2")
 			w.WriteHeader(http.StatusNotImplemented)
 		}
 	}
+}
+
+func (sc *serviceController) get(name string, w http.ResponseWriter) {
+	s, err := models.GetServiceByName(name)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	encodeResponseAsJSON(s, w)
 }
 
 func (sc *serviceController) post(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +72,6 @@ func (sc *serviceController) parseRequest(r *http.Request) (models.Service, erro
 
 func newServiceController() *serviceController {
 	return &serviceController{
-		serviceNamePattern: regexp.MustCompile(`^/services/[a-z0-9]([-a-z0-9]*[a-z0-9])?/?`),
+		serviceNamePattern: regexp.MustCompile(`^/services/([-a-z0-9]*[a-z0-9])?/?`),
 	}
 }
