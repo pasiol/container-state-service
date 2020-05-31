@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"regexp"
 
@@ -28,11 +27,28 @@ func (sc serviceController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			sc.get(name, w)
+		case http.MethodPut:
+			sc.put(w, r)
 		default:
-			fmt.Println("2")
 			w.WriteHeader(http.StatusNotImplemented)
 		}
 	}
+}
+
+func (sc *serviceController) put(w http.ResponseWriter, r *http.Request) {
+	s, err := sc.parseRequest(r)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Could not parse Service object"))
+		return
+	}
+	s, err = models.SetEnded(s.Name)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Could not parse Service object"))
+		return
+	}
+	encodeResponseAsJSON(s, w)
 }
 
 func (sc *serviceController) get(name string, w http.ResponseWriter) {
