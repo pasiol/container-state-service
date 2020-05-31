@@ -2,11 +2,13 @@ package main
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/pasiol/container-state-service/controllers"
 )
 
 func main() {
 	controllers.RegisterControllers()
-	http.ListenAndServe(":3000", nil)
+	port := ":" + os.Getenv("PORT")
+	http.ListenAndServe(port, nil)
 }
