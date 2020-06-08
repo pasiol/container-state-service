@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 	"os"
 
@@ -9,6 +10,8 @@ import (
 
 func main() {
 	controllers.RegisterControllers()
-	port := ":" + os.Getenv("PORT")
-	http.ListenAndServe(port, nil)
+	port := ":" + os.Getenv("STATE_SERVICE_PORT")
+	log.Printf("Starting to listening port: %s", port)
+	log.Fatal(http.ListenAndServe(port, nil))
+
 }

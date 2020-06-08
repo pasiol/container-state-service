@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"regexp"
 
@@ -13,6 +14,7 @@ type serviceController struct {
 }
 
 func (sc serviceController) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Print("http listening.")
 	if r.URL.Path == "/services" {
 		if r.Method == http.MethodPost {
 			sc.post(w, r)
